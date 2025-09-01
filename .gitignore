@@ -6,10 +6,6 @@
 *.so
 *.dylib
 
-# Logs and reports
-*.log
-!examples/*.log
-
 # Go build cache
 *.out
 

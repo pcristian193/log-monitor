@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -24,7 +25,10 @@ func TestMonitorJobs_NoThreshold(t *testing.T) {
 	end, _ := time.Parse(timeLayout, "11:03:00")
 	logs := fakeLog(start, end, "ok task", 1234) // 3 min < 5 min no output
 	outfile := "test_report.log"
-	defer os.Remove(outfile)
+	defer func() {
+		ok := os.Remove(outfile)
+		fmt.Printf("Error removing file '%s': %+v\n", outfile, ok)
+	}()
 
 	err := MonitorJobs(logs, outfile)
 	if err != nil {
@@ -44,7 +48,10 @@ func TestMonitorJobs_WarningThreshold(t *testing.T) {
 	end, _ := time.Parse(timeLayout, "11:06:00")
 	logs := fakeLog(start, end, "long task", 2345) // 6 min > 5 min warning
 	outfile := "test_report_warning.log"
-	defer os.Remove(outfile)
+	defer func() {
+		ok := os.Remove(outfile)
+		fmt.Printf("Error removing file '%s': %+v\n", outfile, ok)
+	}()
 
 	err := MonitorJobs(logs, outfile)
 	if err != nil {
@@ -64,7 +71,10 @@ func TestMonitorJobs_ErrorThreshold(t *testing.T) {
 	end, _ := time.Parse(timeLayout, "12:11:00")
 	logs := fakeLog(start, end, "too long task", 3456) // 11 min > 10 min error
 	outfile := "test_report_error.log"
-	defer os.Remove(outfile)
+	defer func() {
+		ok := os.Remove(outfile)
+		fmt.Printf("Error removing file '%s': %+v\n", outfile, ok)
+	}()
 
 	err := MonitorJobs(logs, outfile)
 	if err != nil {

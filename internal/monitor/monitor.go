@@ -29,7 +29,10 @@ func ParseLog(filePath string) ([]LogEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func() {
+		ok := file.Close()
+		fmt.Printf("Error closing file '%s': %+v\n", filePath, ok)
+	}()
 
 	var logs []LogEntry
 	scanner := bufio.NewScanner(file)
@@ -74,7 +77,11 @@ func MonitorJobs(logs []LogEntry, reportPath string) error {
 	if err != nil {
 		return err
 	}
-	defer reportFile.Close()
+
+	defer func() {
+		ok := reportFile.Close()
+		fmt.Printf("Error closing file '%s': %+v\n", reportPath, ok)
+	}()
 
 	for _, logEntry := range logs {
 		pid := logEntry.PID
