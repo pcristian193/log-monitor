@@ -8,7 +8,7 @@
 
 # Logs and reports
 *.log
-!examples/*.log   # keep example logs
+!examples/*.log
 
 # Go build cache
 *.out
