@@ -30,7 +30,7 @@ func main() {
 	}
 
 	// Add report file to path
-	// reportFile := *reportPath + "/report.log"
+	reportFile := *reportPath + "/report.log"
 
 	// Parse the log file
 	logs, err := monitor.ParseLog(*logFile)
@@ -38,5 +38,11 @@ func main() {
 		log.Fatalf("Failed to parse log: %v", err)
 	}
 
-	fmt.Printf("Logs entries: %+v\n", logs)
+	// Monitor jobs and generate report
+	err = monitor.MonitorJobs(logs, reportFile)
+	if err != nil {
+		log.Fatalf("Monitoring failed: %v", err)
+	}
+
+	fmt.Printf("Report generated at %s\n", reportFile)
 }

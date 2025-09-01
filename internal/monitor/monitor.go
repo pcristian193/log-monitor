@@ -65,3 +65,45 @@ func ParseLog(filePath string) ([]LogEntry, error) {
 	}
 	return logs, nil
 }
+
+// MonitorJobs processes jobs, checking durations against thresholds
+func MonitorJobs(logs []LogEntry, reportPath string) error {
+	jobTracker := make(map[int32]LogEntry)
+
+	reportFile, err := os.Create(reportPath)
+	if err != nil {
+		return err
+	}
+	defer reportFile.Close()
+
+	for _, logEntry := range logs {
+		pid := logEntry.PID
+		switch logEntry.Status {
+		case "START":
+			jobTracker[pid] = logEntry
+		case "END":
+			if startLog, exists := jobTracker[pid]; exists {
+				duration := logEntry.Timestamp.Sub(startLog.Timestamp)
+
+				// Handle midnight rollover (END past midnight, before START)
+				if duration < 0 {
+					duration += 24 * time.Hour
+				}
+
+				var msg string
+				if duration > ErrorThreshold {
+					msg = fmt.Sprintf("ERROR: Job '%s' (PID %d) took %v\n", startLog.JobDescription, pid, duration)
+				} else if duration > WarningThreshold {
+					msg = fmt.Sprintf("WARNING: Job '%s' (PID %d) took %v\n", startLog.JobDescription, pid, duration)
+				}
+
+				if msg != "" {
+					fmt.Print(msg)                     // print to console
+					_, _ = reportFile.WriteString(msg) // write to report
+				}
+				delete(jobTracker, pid)
+			}
+		}
+	}
+	return nil
+}
