@@ -1,0 +1,20 @@
+# Binaries
+/logmonitor
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Logs and reports
+*.log
+!examples/*.log   # keep example logs
+
+# Go build cache
+*.out
+
+# IDE/editor stuff
+.vscode/
+.idea/
+*.swp
+.DS_Store

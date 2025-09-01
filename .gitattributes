@@ -1,0 +1,11 @@
+# Enforce LF line endings
+* text=auto eol=lf
+
+# Treat Go files as text
+*.go text diff
+
+# Treat logs as text
+*.log text
+
+# Make sure Makefile is text
+Makefile text
